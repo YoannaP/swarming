@@ -29,7 +29,7 @@ class Environment:
     # constants for stregnth of each force
     ALPHA = 1  # allignment force
     BETA = 0  # repulsive stregnth
-    GAMMA = 0  # rotor stregnth
+    GAMMA = 0.5  # rotor stregnth
 
     # # distance metrics in the code
     R = 0.1  # radius of allignment
@@ -96,24 +96,16 @@ class Environment:
     def step(self):
         # for number of particles
         for agent in self.agents:
-            force = self._force(agent)
-
+            force = self._force(agent, self.rotor)
             agent.update(force)
 
-            coord_in_rotor = not self._coord_outside_rotor(agent.position["t+1"])
-
-            print(coord_in_rotor)
-            if coord_in_rotor:
-                print(coord_in_rotor)
-
-                agent.update(force)
-
+            # print(not self._coord_outside_rotor(agent.position["t"]))
             # agent.update(force)
 
         for agent in self.agents:
             agent.position["t"] = agent.position["t+1"]
 
-    def _force(self, current_agent):
+    def _force(self, current_agent, rotor):
         force_rep = np.array([0.0, 0.0])
         for agent in self.agents:
             if current_agent.position != agent.position:
@@ -121,10 +113,20 @@ class Environment:
                     current_agent.position["t"], agent.position["t"], self.R_O
                 )
 
+        force_contact = contact_force(
+            self.rotor.verticies,
+            self.rotor.position,
+            current_agent.position["t"],
+            current_agent.velocity,
+            self.V_MAG,
+            self.DELTA_T,
+        )
+
         force = (
             self.ALPHA
             * allignment_force(current_agent, self.agents, self.R, self.MODEL)
             + self.BETA * force_rep
+            - self.GAMMA * force_contact
         )
 
         return force

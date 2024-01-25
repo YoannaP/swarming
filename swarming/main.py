@@ -91,8 +91,8 @@ def simulation_old(plot=True):
 
 if __name__ == "__main__":
     L = 1
-    N = 2
-    n_steps = 50
+    N = 100
+    n_steps = 1000
 
     start = time.time()
     simulation(L, N, n_steps, disp=True)
