@@ -64,7 +64,12 @@ def part_repulsive_force(i, j, r_o):
 
 
 def torque_force(
-    polygon, position_obj, ang_vel_object, velocity_particle, position_particle, v_mag
+    polygon,
+    position_obj,
+    ang_vel_object,
+    position_particle,
+    v_mag,
+    fric_force,
 ):
     """
     Calcualte the torque on an object due to a particle hitting it.
@@ -77,7 +82,7 @@ def torque_force(
 
     # get r from centroid and force
     r = position_particle - position_obj
-
+    print(r)
     # get the angle between r and force
     v1_u = rescale(1, r)
     v2_u = rescale(1, force)
@@ -103,6 +108,7 @@ def obj_repulsive_force(particle_position, polygon, v_mag, bound_cond=True):
     # make the polygon a linear ring
     poly = LinearRing(polygon)
     # create a particle moving straight down
+
     point = Point(particle_position)
 
     # get the closest point on polygon to particle

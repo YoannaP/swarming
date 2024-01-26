@@ -22,13 +22,13 @@ import math
 class Rotor:
     def __init__(self, origin, spikes, inner_radius, outer_radius, angle_diff):
         self.position = origin
-        self.angular_velocity = (0, 0)
-        self.angular_acceleration = (0, 0)
+        self.angular_velocity = 0
+        self.angular_acceleration = 0
         self.outer_rad = outer_radius
         self.verticies = self._get_verticies(
             origin, spikes, inner_radius, outer_radius, angle_diff
         )
-
+        self.mass = 500
         pass
 
     def _get_verticies(self, origin, spikes, inner_radius, outer_radius, angle_diff):
@@ -60,12 +60,23 @@ class Rotor:
 
         return np.array(pts_tot)
 
-    def update(self, force):
-        pass
+    def update(self, force, delta_t):
+        print(self.angular_velocity)
+        moment_of_inertia = (1 / 3) * self.mass
+        self.angular_acceleration = force / moment_of_inertia
+
+        self.angular_velocity = (
+            self.angular_velocity + self.angular_acceleration * delta_t
+        )
+        print(self.angular_velocity, self.angular_acceleration)
+
+        self.update_pos()
 
     def update_pos(self):
+        print("updating position")
         angular_v = self.angular_velocity + self.angular_acceleration * delta_t
 
+        print(angular_v)
         # get the change in angle from the angular velocuty
         angle = angular_v * delta_t
 
@@ -86,26 +97,7 @@ class Rotor:
             new_pos_i = np.dot(rot_mat, polygon_respective[i]) + self.position
             new_pos.append(new_pos_i.tolist())
 
-        return new_pos
-
-    def update_vel(self):
-        pass
-
-    def update_acc(self, agents):
-        # define two inital forces dependent on the particles and on hte object
-        torque_particles = 0
-
-        # loop through each particle and calculate the repulsive force from the particle
-        for agent in agents:
-            torque_particles += torque_force(
-                self.verticies,
-                agent.position["t"],
-                self.angular_velocity,
-                agent.velocity,
-                agent.position["t"],
-            )
-
-        return beta * torque_particles / mom_inertia
+        self.position = new_pos
 
 
 def polygon(origin, a, angle_diff, spikes):

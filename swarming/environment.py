@@ -7,7 +7,7 @@ Envvironement that will contain the simulation.
 
 from rotors import Rotor
 from agents import Agent
-from forces import part_repulsive_force, allignment_force, contact_force
+from forces import part_repulsive_force, allignment_force, contact_force, torque_force
 
 import numpy as np
 import random
@@ -30,6 +30,7 @@ class Environment:
     ALPHA = 1  # allignment force
     BETA = 0  # repulsive stregnth
     GAMMA = 0.5  # rotor stregnth
+    FRIC = 0.2  # rotor friction when rotating
 
     # # distance metrics in the code
     R = 0.1  # radius of allignment
@@ -96,16 +97,29 @@ class Environment:
     def step(self):
         # for number of particles
         for agent in self.agents:
-            force = self._force(agent, self.rotor)
-            agent.update(force)
+            force_agents = self._force_agents(agent)
+            agent.update(force_agents)
 
-            # print(not self._coord_outside_rotor(agent.position["t"]))
-            # agent.update(force)
+        force_rotor = self._force_rotor()
+        self.rotor.update(force_rotor, self.DELTA_T)
 
         for agent in self.agents:
             agent.position["t"] = agent.position["t+1"]
 
-    def _force(self, current_agent, rotor):
+    def _force_rotor(self):
+        torque_particles = 0
+        for agent in self.agents:
+            torque_particles += torque_force(
+                self.rotor.verticies,
+                self.rotor.position,
+                self.rotor.angular_velocity,
+                agent.position["t"],
+                self.V_MAG,
+                self.FRIC,
+            )
+        return self.BETA * torque_particles
+
+    def _force_agents(self, current_agent):
         force_rep = np.array([0.0, 0.0])
         for agent in self.agents:
             if current_agent.position != agent.position:
