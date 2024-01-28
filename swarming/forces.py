@@ -82,7 +82,6 @@ def torque_force(
 
     # get r from centroid and force
     r = position_particle - position_obj
-    print(r)
     # get the angle between r and force
     v1_u = rescale(1, r)
     v2_u = rescale(1, force)
