@@ -3,12 +3,15 @@
 This simulation was used as part of the Physics BSc Research Project. 
 Repository includes report for completeness. 
 
+## Example Simulation
+
+![simulation](https://github.com/YoannaP/swarming/assets/40656484/1bc62fef-e1c5-4b09-9e48-e1a24e43e819)
+
 ## Initialising Simulation
 
 - `cd swarming`
 
 - `python main.py` 
-
 
 
 ## Report Abstract 
